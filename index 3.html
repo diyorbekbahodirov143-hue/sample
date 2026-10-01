@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BITE — Restaurant Demo</title>
+<style>
+:root{--bg:#0d0d0d;--card:#171717;--text:#fff;--muted:#aaa;--accent:#ff7a00;--line:#292929}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+a{text-decoration:none;color:inherit}
+header{position:sticky;top:0;z-index:20;background:rgba(13,13,13,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav{max-width:1150px;margin:auto;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.logo{font-size:25px;font-weight:900;letter-spacing:1px}.logo span{color:var(--accent)}
+nav{display:flex;gap:22px;color:#ddd;font-size:14px}
+.cart-btn,.primary{border:0;background:var(--accent);color:#fff;padding:11px 17px;border-radius:10px;font-weight:700;cursor:pointer}
+.cart-btn{position:relative}.count{background:#fff;color:#111;border-radius:50%;font-size:11px;padding:2px 6px;margin-left:5px}
+.hero{max-width:1150px;margin:auto;padding:70px 20px 45px;display:grid;grid-template-columns:1.05fr .95fr;align-items:center;gap:45px}
+.eyebrow{color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:2px;font-size:13px}
+h1{font-size:clamp(44px,7vw,78px);line-height:.98;margin:12px 0 20px}
+.hero p{color:var(--muted);max-width:560px;font-size:17px}
+.actions{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
+.secondary{border:1px solid #444;padding:11px 17px;border-radius:10px;font-weight:700}
+.hero-img{height:430px;border-radius:28px;overflow:hidden;background:#222}
+.hero-img img{width:100%;height:100%;object-fit:cover}
+section{max-width:1150px;margin:auto;padding:55px 20px}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:25px}
+h2{font-size:34px}.muted{color:var(--muted)}
+.categories{display:flex;gap:9px;overflow:auto;padding-bottom:10px;margin-bottom:25px}
+.cat{white-space:nowrap;background:#191919;border:1px solid #333;color:#ddd;padding:9px 15px;border-radius:99px;cursor:pointer}
+.cat.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.food-img{height:210px;background:#222}.food-img img{width:100%;height:100%;object-fit:cover}
+.card-body{padding:16px}.card h3{font-size:20px}.desc{color:var(--muted);font-size:13px;margin:6px 0 14px;min-height:39px}
+.bottom{display:flex;justify-content:space-between;align-items:center}.price{font-weight:900;font-size:18px}.add{border:1px solid #444;background:#222;color:#fff;border-radius:9px;padding:8px 12px;cursor:pointer}
+.info{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.info-card{background:var(--card);border:1px solid var(--line);padding:22px;border-radius:16px}.info-card b{display:block;margin-bottom:5px}.info-card span{color:var(--muted)}
+.review{background:#171717;border:1px solid #292929;border-radius:18px;padding:22px}.stars{color:#ffb000;margin-bottom:10px}
+footer{border-top:1px solid var(--line);margin-top:20px}.foot{max-width:1150px;margin:auto;padding:30px 20px;color:#888;display:flex;justify-content:space-between;gap:20px}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:50;align-items:flex-end;justify-content:center}.modal.open{display:flex}
+.panel{background:#151515;width:min(560px,100%);max-height:90vh;overflow:auto;border-radius:22px 22px 0 0;padding:24px;border:1px solid #333}
+.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.close{background:none;border:0;color:#fff;font-size:28px;cursor:pointer}
+.cart-item{display:flex;justify-content:space-between;gap:15px;padding:14px 0;border-bottom:1px solid #292929}.qty button{background:#292929;color:#fff;border:0;border-radius:6px;width:28px;height:28px;cursor:pointer}
+.total{display:flex;justify-content:space-between;font-size:21px;font-weight:900;margin:20px 0}
+form{display:grid;gap:10px}input,textarea{width:100%;background:#202020;border:1px solid #333;color:#fff;border-radius:9px;padding:12px}textarea{resize:vertical;min-height:80px}
+@media(max-width:800px){nav{display:none}.hero{grid-template-columns:1fr;padding-top:40px}.hero-img{height:310px}.grid{grid-template-columns:repeat(2,1fr)}.info{grid-template-columns:1fr}.foot{flex-direction:column}}
+@media(max-width:520px){.grid{grid-template-columns:1fr}.card .food-img{height:230px}h2{font-size:28px}.hero{gap:28px}.hero-img{height:280px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a class="logo" href="#">BITE<span>.</span></a>
+    <nav><a href="#menu">Menu</a><a href="#about">Biz haqimizda</a><a href="#contact">Aloqa</a></nav>
+    <button class="cart-btn" onclick="openCart()">🛒 Savat <span class="count" id="count">0</span></button>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div>
+    <div class="eyebrow">Fresh • Fast • Delicious</div>
+    <h1>Och qoldingizmi?<br>Biz tayyormiz.</h1>
+    <p>Issiq, yangi va mazali taomlar. Buyurtmangizni bir necha bosishda bering.</p>
+    <div class="actions">
+      <a class="primary" href="#menu">Menyuni ko‘rish</a>
+      <a class="secondary" href="#contact">📍 Bizni toping</a>
+    </div>
+  </div>
+  <div class="hero-img">
+    <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=85" alt="Burger">
+  </div>
+</section>
+
+<section id="menu">
+  <div class="section-head">
+    <div><div class="eyebrow">Bizning menyu</div><h2>Sevimli taomlaringiz</h2></div>
+    <span class="muted">Narxlar: UZS</span>
+  </div>
+  <div class="categories">
+    <button class="cat active" onclick="filterMenu('all',this)">Barchasi</button>
+    <button class="cat" onclick="filterMenu('burger',this)">Burger</button>
+    <button class="cat" onclick="filterMenu('pizza',this)">Pizza</button>
+    <button class="cat" onclick="filterMenu('chicken',this)">Chicken</button>
+    <button class="cat" onclick="filterMenu('drink',this)">Ichimliklar</button>
+  </div>
+  <div class="grid" id="menuGrid"></div>
+</section>
+
+<section id="about">
+  <div class="section-head"><div><div class="eyebrow">Nega BITE?</div><h2>Oddiy. Tez. Mazali.</h2></div></div>
+  <div class="info">
+    <div class="info-card">⚡ <b>Tez tayyorlanadi</b><span>Buyurtmangizni imkon qadar tez tayyorlaymiz.</span></div>
+    <div class="info-card">🥬 <b>Yangi mahsulotlar</b><span>Har kuni sifatli va yangi mahsulotlardan foydalanamiz.</span></div>
+    <div class="info-card">❤️ <b>Yaxshi xizmat</b><span>Mehmonlarimizning qulayligi biz uchun muhim.</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="section-head"><div><div class="eyebrow">Mijozlar fikri</div><h2>Ular nima deydi?</h2></div></div>
+  <div class="review"><div class="stars">★★★★★</div><p>“Burger juda mazali, buyurtma ham tez tayyor bo‘ldi. Yana kelaman!”</p><br><b>— Azizbek</b></div>
+</section>
+
+<section id="contact">
+  <div class="section-head"><div><div class="eyebrow">Biz bilan bog‘laning</div><h2>Restoran haqida</h2></div></div>
+  <div class="info">
+    <div class="info-card">📍 <b>Manzil</b><span>Toshkent shahri, Chilonzor</span><br><br><a class="primary" href="https://www.google.com/maps/search/?api=1&query=Tashkent+Uzbekistan" target="_blank">Xaritani ochish</a></div>
+    <div class="info-card">🕐 <b>Ish vaqti</b><span>Har kuni: 10:00 — 23:00</span></div>
+    <div class="info-card">📞 <b>Telefon</b><span>+998 90 123 45 67</span><br><br><a class="primary" href="tel:+998901234567">Qo‘ng‘iroq qilish</a></div>
+  </div>
+</section>
+</main>
+
+<footer><div class="foot"><span>© 2026 BITE Restaurant</span><span>Demo website</span></div></footer>
+
+<div class="modal" id="cartModal" onclick="if(event.target===this)closeCart()">
+ <div class="panel">
+  <div class="panel-head"><h2>Sizning savatingiz</h2><button class="close" onclick="closeCart()">×</button></div>
+  <div id="cartItems"></div>
+  <div class="total"><span>Jami</span><span id="total">0 UZS</span></div>
+  <form onsubmit="sendOrder(event)">
+   <input id="customerName" placeholder="Ismingiz" required>
+   <input id="customerPhone" placeholder="Telefon raqamingiz" required>
+   <textarea id="customerAddress" placeholder="Manzil / izoh"></textarea>
+   <button class="primary" type="submit">Buyurtma berish</button>
+  </form>
+ </div>
+</div>
+
+<script>
+const foods=[
+{id:1,cat:'burger',name:'Classic Burger',desc:'Mol go‘shti, cheddar, pomidor, salat va maxsus sous.',price:39000,img:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=900&q=80'},
+{id:2,cat:'burger',name:'Cheese Burger',desc:'Ikki qavatli pishloq va shirali mol go‘shti.',price:45000,img:'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=900&q=80'},
+{id:3,cat:'pizza',name:'Pepperoni Pizza',desc:'Pepperoni, mozzarella va pomidor sousi.',price:69000,img:'https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=900&q=80'},
+{id:4,cat:'pizza',name:'Chicken Pizza',desc:'Tovuq go‘shti, mozzarella, qo‘ziqorin va sous.',price:65000,img:'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=900&q=80'},
+{id:5,cat:'chicken',name:'Crispy Chicken',desc:'Qarsildoq tovuq bo‘laklari va maxsus sous.',price:52000,img:'https://images.unsplash.com/photo-1562967916-eb82221dfb36?auto=format&fit=crop&w=900&q=80'},
+{id:6,cat:'drink',name:'Fresh Lemonade',desc:'Limon, yalpiz va muz bilan tayyorlangan ichimlik.',price:18000,img:'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=900&q=80'}
+];
+let cart=[];
+const money=n=>n.toLocaleString('uz-UZ')+' UZS';
+function render(items=foods){
+ document.getElementById('menuGrid').innerHTML=items.map(f=>`<article class="card"><div class="food-img"><img src="${f.img}" alt="${f.name}" loading="lazy"></div><div class="card-body"><h3>${f.name}</h3><div class="desc">${f.desc}</div><div class="bottom"><span class="price">${money(f.price)}</span><button class="add" onclick="addToCart(${f.id})">+ Savat</button></div></div></article>`).join('');
+}
+function filterMenu(cat,btn){document.querySelectorAll('.cat').forEach(x=>x.classList.remove('active'));btn.classList.add('active');render(cat==='all'?foods:foods.filter(x=>x.cat===cat));}
+function addToCart(id){let x=cart.find(i=>i.id===id);x?x.qty++:cart.push({...foods.find(i=>i.id===id),qty:1});updateCart();openCart();}
+function updateCart(){
+ document.getElementById('count').textContent=cart.reduce((a,x)=>a+x.qty,0);
+ document.getElementById('cartItems').innerHTML=cart.length?cart.map(x=>`<div class="cart-item"><div><b>${x.name}</b><br><span class="muted">${money(x.price)}</span></div><div class="qty"><button onclick="changeQty(${x.id},-1)">−</button> <b>${x.qty}</b> <button onclick="changeQty(${x.id},1)">+</button></div></div>`).join(''):'<p class="muted">Savat bo‘sh.</p>';
+ document.getElementById('total').textContent=money(cart.reduce((a,x)=>a+x.price*x.qty,0));
+}
+function changeQty(id,d){let x=cart.find(i=>i.id===id);if(!x)return;x.qty+=d;if(x.qty<=0)cart=cart.filter(i=>i.id!==id);updateCart();}
+function openCart(){document.getElementById('cartModal').classList.add('open');updateCart()}
+function closeCart(){document.getElementById('cartModal').classList.remove('open')}
+function sendOrder(e){e.preventDefault();if(!cart.length){alert('Savat bo‘sh.');return}let text='Assalomu alaykum! Men buyurtma bermoqchiman:%0A'+cart.map(x=>`${x.name} x${x.qty} — ${money(x.price*x.qty)}`).join('%0A')+`%0A%0AJami: ${money(cart.reduce((a,x)=>a+x.price*x.qty,0))}%0AIsm: ${encodeURIComponent(document.getElementById('customerName').value)}%0ATel: ${encodeURIComponent(document.getElementById('customerPhone').value)}%0AManzil/izoh: ${encodeURIComponent(document.getElementById('customerAddress').value)}`;window.open('https://t.me/share/url?url=&text='+text,'_blank')}
+render();updateCart();
+</script>
+</body>
+</html>
